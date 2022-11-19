@@ -1,23 +1,20 @@
-#include <bits/stdc++.h>
-
-#include <thread>
-#include <atomic>
-#include <mutex>
-#include <iomanip>
+#include <vector>
+#include <queue>
+#include <random>
 #include <iostream>
 #include <unistd.h>
+#include <thread>
+#include <mutex>
 #include <condition_variable>
-
-
-
 using namespace std;
 minstd_rand rng;
 
-int M = 3;			// cpus
+
 int N = 20; 		// procesos maximos, rango [a, b]
+int M = 3;			// cpus
 int a = 1, b = 5;	// [a, b]
 
-vector<vector<queue<int>>> runqueue(2);		// 2 runqueues, rango (0, 10-1)
+vector<vector<queue<int>>> runqueue(2);		// 2 runqueues, rango (0, colas-1)
 vector<int> tiempo;
 int colas = 10;
 int N2 = 10;		// "pid" actual maximo
