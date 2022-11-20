@@ -36,14 +36,14 @@ int defPrioridad(int prioridadActual, int nuevoTiempo){
 }
 
 
-int hebra_E(){
+int hebra_E(int h){
 	int cola = 0;
 	while(true){
 		locks[activa][cola].lock();
 		if(!runqueue[activa][cola].empty()){
 			int proceso = runqueue[activa][cola].front();
 			runqueue[activa][cola].pop();
-			cout << "Proceso " << proceso << " ejecutandose" << endl;
+			cout << "CPU " << h << ", Proceso " << proceso << " ejecutandose" << endl;
 			locks[activa][cola].unlock();
 
 			int tiempoEjecucion = min(tiempo[proceso], quantum);
@@ -96,7 +96,7 @@ int hebra_G(){
 		}
 		N2 += nuevosProc;
 
-		cout << endl;
+		cout << endl << "Cola" << endl;
 		cout << "Activa" << " Proceso(Tiempo)" << endl;
 		for(int i=0; i<colas; i++){
 			int aux = runqueue[activa][i].size();
@@ -123,6 +123,7 @@ int hebra_G(){
 
 int main(){
 	rng.seed(time(NULL));
+	cout << "N M a b" << endl;
 	cin >> N >> M >> a >> b;
 
 	runqueue[0] = vector<queue<int>>(colas);
@@ -135,6 +136,7 @@ int main(){
 		tiempo.push_back(a + rng()%b);
 	}
 
+	cout << endl << "Cola" << endl;
 	cout << "Activa" << " Proceso(Tiempo)" << endl;
 	for(int i=0; i<colas; i++){
 		int aux = runqueue[activa][i].size();
@@ -153,7 +155,7 @@ int main(){
 
 	vector<thread> t;
 	for(int i=0; i<M; i++){
-		thread aux(hebra_E);
+		thread aux(hebra_E, i);
 		t.push_back( move(aux) );
 	}
 	thread aux(hebra_G);
