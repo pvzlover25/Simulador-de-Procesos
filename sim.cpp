@@ -53,7 +53,7 @@ int hebra_E(int h){
 			if(tiempo[proceso] > quantum){
 				tiempo[proceso] = a + rng()%b;			// ?????????????????????????
 				runqueue[expirada][ defPrioridad(cola, tiempo[proceso]) ].push(proceso);	
-			}
+			}else cout << "Proceso " << proceso << " finalizado" << endl;
 			locks[expirada][cola].unlock();
 
 		}else{
