@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+
 using namespace std;
 minstd_rand rng;
 
@@ -60,7 +61,7 @@ int hebra_E(int h){
                 unique_lock<mutex> m(mE);
 
                 esperando++;
-                if (esperando == M) // todas las colas vacias esperando
+                if (esperando == M) // todas las CPUs con colas vacias esperando
                     cvG.notify_one(); // se activa la hebra G
                 cvE.wait(m);
             }
