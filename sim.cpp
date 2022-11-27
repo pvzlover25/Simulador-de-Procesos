@@ -63,12 +63,13 @@ int hebra_E(int h){
             int tiempoEjecucion = min(tiempo[proceso], quantum); // planificador cuenta con un periodo de tiempo (similar a RR) 
             sleep(tiempoEjecucion);
 
-            locks[expirada][cola].lock();
             // cuando un proceso no termina en el tiempo establecido, es agregado a la runqueue expirada con una prioridad inferior 
             // y con un nuevo tiempo de ejecución
             if (tiempo[proceso] > quantum){
+				int nuevaPrioridad = defPrioridad(cola, tiempo[proceso]);
+            	locks[expirada][nuevaPrioridad].lock();
                 tiempo[proceso] = a + rng() % b; // ????????????????????????? También si un proceso tiene tiempo de ejecución inferior no significa que ese tiempo "sobrante" se acumule. 
-                runqueue[expirada][defPrioridad(cola, tiempo[proceso])].push(proceso);
+                runqueue[expirada][nuevaPrioridad].push(proceso);
             }
             else{
 				mPrint.lock();
@@ -76,6 +77,7 @@ int hebra_E(int h){
 				mPrint.unlock();
 			}
 			locks[expirada][cola].unlock();
+
         }else{
             locks[activa][cola].unlock();
 
