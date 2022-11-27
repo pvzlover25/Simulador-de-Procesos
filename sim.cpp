@@ -23,8 +23,27 @@ int activa = 0, expirada = 1, esperando = 0;
 int quantum = 1;
 
 vector<vector<mutex>> locks(2);
-mutex mE, mG;
+mutex mE, mG, mPrint;
 condition_variable cvE, cvG;
+
+void imprimir(){
+    cout << endl << "Cola" << endl;
+    cout << "Activa" << " Proceso(Tiempo)" << endl;
+    for (int i = 0; i < colas; i++){
+        int aux = runqueue[activa][i].size();
+        !aux ? cout << " " << i << "     -"
+             : cout << " " << i << "    ";
+
+        while (aux--){
+            int aux2 = runqueue[activa][i].front();
+            cout << " " << aux2 << "(" << tiempo[aux2] << ")";
+            runqueue[activa][i].push(aux2);
+            runqueue[activa][i].pop();
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
 
 int defPrioridad(int prioridadActual, int nuevoTiempo){
     return nuevoTiempo / quantum > 3 ? min(9, prioridadActual + 1) :  max(0, prioridadActual - 1);
@@ -51,9 +70,12 @@ int hebra_E(int h){
                 tiempo[proceso] = a + rng() % b; // ????????????????????????? También si un proceso tiene tiempo de ejecución inferior no significa que ese tiempo "sobrante" se acumule. 
                 runqueue[expirada][defPrioridad(cola, tiempo[proceso])].push(proceso);
             }
-            else
-                cout << "Proceso " << proceso << " finalizado" << endl;
-            locks[expirada][cola].unlock();
+            else{
+				mPrint.lock();
+                 cout << "CPU " << h << ", Proceso " << proceso << " finalizado" << endl;
+				mPrint.unlock();
+			}
+			locks[expirada][cola].unlock();
         }else{
             locks[activa][cola].unlock();
 
@@ -95,22 +117,7 @@ int hebra_G()
         }
         N2 += nuevosProc;
 
-        cout << endl << "Cola" << endl;
-        cout << "Activa" << " Proceso(Tiempo)" << endl;
-        for (int i = 0; i < colas; i++){
-            int aux = runqueue[activa][i].size();
-            !aux ? cout << " " << i << "     -"
-                 : cout << " " << i << "    ";
-
-            while (aux--){
-                int aux2 = runqueue[activa][i].front();
-                cout << " " << aux2 << "(" << tiempo[aux2] << ")";
-                runqueue[activa][i].push(aux2);
-                runqueue[activa][i].pop();
-            }
-            cout << endl;
-        }
-        cout << endl;
+		imprimir();
 
         cvE.notify_all();
     }
@@ -134,22 +141,7 @@ int main()
         tiempo.push_back(a + rng() % b);
     }
 
-    cout << endl << "Cola" << endl;
-    cout << "Activa" << " Proceso(Tiempo)" << endl;
-    for (int i = 0; i < colas; i++){
-        int aux = runqueue[activa][i].size();
-        !aux ? cout << " " << i << "     -"
-             : cout << " " << i << "    ";
-
-        while (aux--){
-            int aux2 = runqueue[activa][i].front();
-            cout << " " << aux2 << "(" << tiempo[aux2] << ")";
-            runqueue[activa][i].push(aux2);
-            runqueue[activa][i].pop();
-        }
-        cout << endl;
-    }
-    cout << endl;
+	imprimir();
 
     vector<thread> t;
     for (int i = 0; i < M; i++){
