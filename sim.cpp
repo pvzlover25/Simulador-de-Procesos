@@ -81,9 +81,9 @@ int hebra_G()
 
         unique_lock<mutex> m2(mE);
         esperando = 0;
-        swap(activa, expirada); // 1 0 -> 0 1
+        swap(activa, expirada); // 1 0 -> 0 1, para los procesos de la runqueue expirada
 
-        int procesosActuales = 0; // procesos en la runqueue expirada
+        int procesosActuales = 0; // procesos en la runqueue expirada/activa
         for (int i = 0; i < colas; i++)
             procesosActuales += runqueue[activa][i].size();
 
